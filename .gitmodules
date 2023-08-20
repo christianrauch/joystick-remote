@@ -1,0 +1,3 @@
+[submodule "qmlJoypad"]
+	path = qmlJoypad
+	url = https://github.com/tobiasThomer/qmlJoypad.git
