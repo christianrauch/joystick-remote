@@ -6,12 +6,12 @@ import QtQuick.Layouts
 
 
 Window {
-    width: 640
-    height: 480
-//    width: 800
-//    height: 600
+//    width: 640
+//    height: 480
+    width: 1000
+    height: 600
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("Remote Control")
 
     ColumnLayout {
 //        anchors.fill: parent
@@ -35,7 +35,7 @@ Window {
                     id: text1
 //                    Layout.alignment: Qt.AlignLeft
                     Layout.fillWidth: true
-                    text: qsTr("Text")
+                    text: qsTr("Connect")
                 }
 //            }
 
@@ -61,7 +61,7 @@ Window {
 //                    anchors.right: parent.right
 //                    Layout.alignment: Qt.AlignRight
 //                    Layout.alignment: Qt.AlignRight
-                    text: qsTr("connect")
+//                    text: qsTr("connect")
                 }
     //        }
         }
@@ -84,23 +84,16 @@ Window {
 //            Item {
             Slider {
                 Layout.fillHeight: true
-                from: 1
-                value: 256
-                to: 1024
+                from: 0
+                value: 0
+                to: 1000
                 orientation: Qt.Vertical
             }
             Slider {
                 Layout.fillHeight: true
-                from: 1
-                value: 256
-                to: 1024
-                orientation: Qt.Vertical
-            }
-            Slider {
-                Layout.fillHeight: true
-                from: 1
-                value: 256
-                to: 1024
+                from: 0
+                value: 0
+                to: 1000
                 orientation: Qt.Vertical
             }
 //            }
@@ -129,6 +122,7 @@ Window {
 //                    Layout.alignment: Qt.AlignLeft
                     readOnly: true
                     text: joypad1.xAxis
+                    maximumLength: 4
                 }
                 TextField {
                     id: textY1
@@ -136,6 +130,7 @@ Window {
 //                    Layout.alignment: Qt.AlignRight
                     readOnly: true
                     text: joypad1.yAxis
+                    maximumLength: 4
                 }
 //            }
 
@@ -143,7 +138,7 @@ Window {
 
             Text {
                 id: textasas
-                text: qsTr("bla")
+                text: qsTr("values")
             }
 
             Item { Layout.fillWidth: true }
@@ -157,6 +152,7 @@ Window {
 //                    Layout.alignment: Qt.AlignLeft
                     readOnly: true
                     text: joypad2.yAxis
+                    maximumLength: 4
                 }
                 TextField {
                     id: textX2
@@ -164,6 +160,7 @@ Window {
 //                    Layout.alignment: Qt.AlignRight
                     readOnly: true
                     text: joypad2.xAxis
+                    maximumLength: 4
                 }
 //            }
         }
