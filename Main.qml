@@ -13,6 +13,16 @@ Window {
     visible: true
     title: qsTr("Remote Control")
 
+    Client {
+        id: client
+    }
+
+    Timer {
+        interval: 500; running: true; repeat: true
+//        onTriggered: client.send(joypad1.xAxis, joypad1.yAxis, joypad2.xAxis, joypad2.yAxis)
+        onTriggered: client.send_channels(joypad1.xAxis)
+    }
+
     ColumnLayout {
 //        anchors.fill: parent
 //        width: 1500
@@ -44,7 +54,7 @@ Window {
                     id: frame
                     Layout.alignment: Qt.AlignCenter
                     TextInput {
-                        id: textEdit
+                        id: server
 //                        Layout.fillWidth: true
 //                        Layout.fillHeight: true
                         inputMask: "999.999.999.999"
@@ -62,6 +72,7 @@ Window {
 //                    Layout.alignment: Qt.AlignRight
 //                    Layout.alignment: Qt.AlignRight
 //                    text: qsTr("connect")
+                    onToggled: client.connect(server.text, switch1.checked)
                 }
     //        }
         }
