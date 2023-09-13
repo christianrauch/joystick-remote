@@ -18,9 +18,11 @@ Window {
     }
 
     Timer {
-        interval: 500; running: true; repeat: true
+        interval: 100; running: true; repeat: true
 //        onTriggered: client.send(joypad1.xAxis, joypad1.yAxis, joypad2.xAxis, joypad2.yAxis)
-        onTriggered: client.send_channels(joypad1.xAxis)
+        // MODE 2 TAER
+        onTriggered: client.send_channels(joypad1.yAxis, joypad2.xAxis, joypad2.yAxis, joypad1.xAxis,
+                                          aux1.value, aux2.value)
     }
 
     ColumnLayout {
@@ -94,17 +96,19 @@ Window {
 
 //            Item {
             Slider {
+                id: aux1
                 Layout.fillHeight: true
-                from: 0
-                value: 0
-                to: 1000
+//                from: 0
+//                value: 0
+//                to: 1000
                 orientation: Qt.Vertical
             }
             Slider {
+                id: aux2
                 Layout.fillHeight: true
-                from: 0
-                value: 0
-                to: 1000
+//                from: 0
+//                value: 0
+//                to: 1000
                 orientation: Qt.Vertical
             }
 //            }
