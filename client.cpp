@@ -23,13 +23,17 @@ Client::connect(const QString &server, bool on)
     // socket etc.
     if (on) {
         qInfo() << "connect: " << server.toStdString();
-//        this->connect(server);
         this->server = QHostAddress(server);
-        socket.bind(this->server, port);
+        socket = new QUdpSocket;
+        socket->bind(this->server, port);
     }
     else {
-        qInfo() << "disconnect";
-        socket.close();
+        qInfo() << "disconnecting ...";
+//        while (socket->hasPendingDatagrams());
+        socket->close();
+        qInfo() << "disconnected";
+        delete socket;
+        socket = nullptr;
     }
 }
 
@@ -52,9 +56,10 @@ void
 Client::send_channels(float throttle, float roll, float pitch, float yaw,
                       float aux1, float aux2, float aux3, float aux4)
 {
-//    std::cout << "send" << std::endl;
-//    if (!socket.isOpen())
-//        return;
+    if (!socket) {
+        qInfo() << "not connected";
+        return;
+    }
 
 //    qInfo() << "send " << throttle;
 //    qFatal() << "send";
@@ -105,5 +110,5 @@ Client::send_channels(float throttle, float roll, float pitch, float yaw,
 
     qInfo() << "buf(" << buffer.data().size() << "): " << buffer.data();
 
-    socket.writeDatagram(buffer.data(), this->server, port);
+    socket->writeDatagram(buffer.data(), this->server, port);
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include <QObject>
-#include <QTimer>
 #include <QUdpSocket>
 #include <qqml.h>
 
@@ -15,7 +14,7 @@ public:
 private:
 //    void connect(const QString &server);
 
-    QUdpSocket socket;
+    QUdpSocket *socket = nullptr;
     QHostAddress server;
     const quint16 port = 51324;
 
