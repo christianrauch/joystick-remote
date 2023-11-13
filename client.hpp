@@ -32,7 +32,7 @@ public slots:
     // 3: (E) pitch
     // 4: (R) yaw
     void send_channels(float throttle, float roll, float pitch, float yaw,
-                       float aux1 = NAN, float aux2 = NAN, float aux3 = NAN, float aux4 = NAN);
+                       float aux1 = NAN, float aux2 = NAN, float aux3 = NAN, float aux4 = NAN, float aux5 = NAN, float aux6 = NAN);
 
 signals:
 

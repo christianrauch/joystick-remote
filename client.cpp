@@ -1,6 +1,7 @@
 #include "client.hpp"
 #include <iostream>
 #include <QBuffer>
+#include <zlib.h>
 
 
 Client::Client(QObject *parent)
@@ -54,7 +55,7 @@ Client::connect(const QString &server, bool on)
 
 void
 Client::send_channels(float throttle, float roll, float pitch, float yaw,
-                      float aux1, float aux2, float aux3, float aux4)
+                      float aux1, float aux2, float aux3, float aux4, float aux5, float aux6)
 {
     if (!socket) {
         qInfo() << "not connected";
@@ -64,10 +65,15 @@ Client::send_channels(float throttle, float roll, float pitch, float yaw,
 //    qInfo() << "send " << throttle;
 //    qFatal() << "send";
 
-    throttle = (-throttle + 1) / 2;
-    yaw = (1 + yaw ) / 2;
-    pitch = (-pitch + 1) / 2;
-    roll = (1 + roll ) / 2;
+//    throttle = (-throttle + 1) / 2;
+//    yaw = (1 + yaw ) / 2;
+//    pitch = (-pitch + 1) / 2;
+//    roll = (1 + roll ) / 2;
+
+    if (throttle != 0)
+        throttle *= -1;
+    if (pitch != 0)
+        pitch *= -1;
 
     qInfo() << "TAER: " << throttle << ", " << roll << ", " << pitch << ", " << yaw << ", " << aux1 << ", " << aux2;
 
@@ -80,7 +86,8 @@ Client::send_channels(float throttle, float roll, float pitch, float yaw,
     stream.setFloatingPointPrecision(QDataStream::FloatingPointPrecision::SinglePrecision);
 
     const uint8_t nchannels = 4 + !std::isnan(aux1) + !std::isnan(aux2) + !std::isnan(aux3) + !std::isnan(aux4);
-    stream << nchannels << throttle << roll << pitch << yaw;
+//    stream << uint8_t(0x0F) << nchannels << throttle << roll << pitch << yaw;
+    stream << uint8_t(0x0F) << nchannels << roll << pitch << yaw << throttle;
 //    stream << uint8_t(1) << aux1;
 //    stream << uint8_t(1);
 //    stream << 1.0f;
@@ -92,6 +99,10 @@ Client::send_channels(float throttle, float roll, float pitch, float yaw,
         stream << aux3;
     if (!std::isnan(aux4))
         stream << aux4;
+    if (!std::isnan(aux5))
+        stream << aux5;
+    if (!std::isnan(aux6))
+        stream << aux6;
 
 //    QByteArray data;
 //    data.append(nchannels);
@@ -108,7 +119,24 @@ Client::send_channels(float throttle, float roll, float pitch, float yaw,
 //    if (!std::isnan(aux4))
 //        data.append(reinterpret_cast<const char *>(&aux4), sizeof(float));
 
+    const uint32_t crc = crc32(0L, (const Bytef *)buffer.data().data(), buffer.data().size());
+
+    // https://stackoverflow.com/questions/40416995/difference-between-crc32-implementations-of-linux-crc32-h-and-zlib-h-in-c
+//     crc_final = crc32(crc_initial ^ 0xffffffff, buf, len) ^ 0xffffffff;
+
+//    const uint32_t crc = crc32(0L^ 0xffffffff, (const Bytef *)buffer.data().data(), buffer.data().size())^ 0xffffffff;
+
+
+    stream << crc;
+
+    qInfo() << "crc: " << crc;
+
     qInfo() << "buf(" << buffer.data().size() << "): " << buffer.data();
+
+    for (const uint8_t &b : buffer.data())
+    {
+        qInfo() << "b: " << b;
+    }
 
     socket->writeDatagram(buffer.data(), this->server, port);
 }
