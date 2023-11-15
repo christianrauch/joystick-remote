@@ -58,7 +58,7 @@ Client::send_channels(float throttle, float roll, float pitch, float yaw,
                       float aux1, float aux2, float aux3, float aux4, float aux5, float aux6)
 {
     if (!socket) {
-        qInfo() << "not connected";
+//        qInfo() << "not connected";
         return;
     }
 
