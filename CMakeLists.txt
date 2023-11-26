@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
 find_package(ZLIB REQUIRED)
+find_package(MAVSDK REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -32,7 +33,7 @@ set_target_properties(appjoystick-remote PROPERTIES
 )
 
 target_link_libraries(appjoystick-remote
-    PRIVATE Qt6::Quick ZLIB::ZLIB
+    PRIVATE Qt6::Quick ZLIB::ZLIB MAVSDK::mavsdk
 )
 
 include(GNUInstallDirs)

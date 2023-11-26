@@ -1,7 +1,10 @@
 #pragma once
 #include "client.hpp"
-#include <QUdpSocket>
+// #include <QUdpSocket>
 #include <qqml.h>
+
+#include <mavsdk/mavsdk.h>
+#include <mavsdk/plugins/manual_control/manual_control.h>
 
 
 class ClientMavLink : public Client
@@ -12,16 +15,22 @@ public:
     explicit ClientMavLink(QObject *parent = nullptr);
 
 private:
-    QUdpSocket *socket = nullptr;
-    QHostAddress server;
-    const quint16 port = 51324;
+    // QUdpSocket *socket = nullptr;
+    // QHostAddress server;
+    // const quint16 port = 51324;
+
+    mavsdk::Mavsdk mavsdk;
+
+    mavsdk::ConnectionResult connection_result;
+
+    std::shared_ptr<mavsdk::ManualControl> manual_control;
 
 public slots:
-    void start(const QString &server) override;
+    bool start(const QString &server) override;
 
-    void stop() override;
+    bool stop() override;
 
-    void
+    bool
     send(float roll, float pitch, float yaw, float throttle,
          float aux1 = NAN, float aux2 = NAN, float aux3 = NAN,
          float aux4 = NAN, float aux5 = NAN, float aux6 = NAN)  override;
