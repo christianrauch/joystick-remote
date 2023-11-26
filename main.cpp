@@ -1,6 +1,5 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include "client.hpp"
 
 
 int main(int argc, char *argv[])

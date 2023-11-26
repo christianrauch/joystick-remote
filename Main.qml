@@ -13,7 +13,7 @@ Window {
     visible: true
     title: qsTr("Remote Control")
 
-    Client {
+    ClientUDP {
         id: client
     }
 
@@ -21,8 +21,7 @@ Window {
         interval: 100; running: true; repeat: true
 //        onTriggered: client.send(joypad1.xAxis, joypad1.yAxis, joypad2.xAxis, joypad2.yAxis)
         // MODE 2 TAER
-        onTriggered: client.send_channels(joypad1.yAxis, joypad2.xAxis, joypad2.yAxis, joypad1.xAxis,
-                                          aux1.value, aux2.value)
+        onTriggered: client.send(joypad2.xAxis, joypad2.yAxis, joypad1.xAxis, joypad1.yAxis, aux1.value, aux2.value)
     }
 
     ColumnLayout {
@@ -74,7 +73,13 @@ Window {
 //                    Layout.alignment: Qt.AlignRight
 //                    Layout.alignment: Qt.AlignRight
 //                    text: qsTr("connect")
-                    onToggled: client.connect(server.text, switch1.checked)
+                    // onToggled: client.connect(server.text, switch1.checked)
+                    onToggled: {
+                        if(switch1.checked)
+                            client.start(server.text)
+                        else
+                            client.stop()
+                    }
                 }
     //        }
         }

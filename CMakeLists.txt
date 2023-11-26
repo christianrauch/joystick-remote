@@ -17,7 +17,7 @@ qt_add_qml_module(appjoystick-remote
     URI joystick-remote
     VERSION 1.0
     QML_FILES Main.qml qmlJoypad/Joypad.qml
-    SOURCES client.hpp client.cpp
+    SOURCES client-udp.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

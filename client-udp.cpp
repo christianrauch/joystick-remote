@@ -1,11 +1,11 @@
-#include "client.hpp"
+#include "client-udp.hpp"
 #include <iostream>
 #include <QBuffer>
 #include <zlib.h>
 
 
-Client::Client(QObject *parent)
-    : QObject{parent}
+ClientUDP::ClientUDP(QObject *parent)
+    : Client{parent}
 {
 //    timer = new QTimer();
 //    connect(timer, SIGNAL(timeout()), this, SLOT(send_channels()));
@@ -19,23 +19,24 @@ Client::Client(QObject *parent)
 //}
 
 void
-Client::connect(const QString &server, bool on)
+ClientUDP::start(const QString &server)
 {
     // socket etc.
-    if (on) {
-        qInfo() << "connect: " << server.toStdString();
-        this->server = QHostAddress(server);
-        socket = new QUdpSocket;
-        socket->bind(this->server, port);
-    }
-    else {
-        qInfo() << "disconnecting ...";
-//        while (socket->hasPendingDatagrams());
-        socket->close();
-        qInfo() << "disconnected";
-        delete socket;
-        socket = nullptr;
-    }
+    qInfo() << "connect: " << server.toStdString();
+    this->server = QHostAddress(server);
+    socket = new QUdpSocket;
+    socket->bind(this->server, port);
+}
+
+void
+ClientUDP::stop()
+{
+    qInfo() << "disconnecting ...";
+    //        while (socket->hasPendingDatagrams());
+    socket->close();
+    qInfo() << "disconnected";
+    delete socket;
+    socket = nullptr;
 }
 
 //void
@@ -54,8 +55,9 @@ Client::connect(const QString &server, bool on)
 // TODO: fix channel order
 
 void
-Client::send_channels(float throttle, float roll, float pitch, float yaw,
-                      float aux1, float aux2, float aux3, float aux4, float aux5, float aux6)
+ClientUDP::send(float roll, float pitch, float yaw, float throttle,
+                float aux1, float aux2, float aux3,
+                float aux4, float aux5, float aux6)
 {
     if (!socket) {
 //        qInfo() << "not connected";
@@ -85,12 +87,15 @@ Client::send_channels(float throttle, float roll, float pitch, float yaw,
     stream.setByteOrder(QDataStream::BigEndian);
     stream.setFloatingPointPrecision(QDataStream::FloatingPointPrecision::SinglePrecision);
 
-    const uint8_t nchannels = 4 + !std::isnan(aux1) + !std::isnan(aux2) + !std::isnan(aux3) + !std::isnan(aux4);
 //    stream << uint8_t(0x0F) << nchannels << throttle << roll << pitch << yaw;
-    stream << uint8_t(0x0F) << nchannels << roll << pitch << yaw << throttle;
+    stream << uint8_t(0x0F) << roll << pitch << yaw << throttle;
 //    stream << uint8_t(1) << aux1;
 //    stream << uint8_t(1);
 //    stream << 1.0f;
+
+    const uint8_t nauxchannels = !std::isnan(aux1) + !std::isnan(aux2) + !std::isnan(aux3) + !std::isnan(aux4);
+    stream << nauxchannels;
+
     if (!std::isnan(aux1))
         stream << aux1;
     if (!std::isnan(aux2))
@@ -133,10 +138,9 @@ Client::send_channels(float throttle, float roll, float pitch, float yaw,
 
     qInfo() << "buf(" << buffer.data().size() << "): " << buffer.data();
 
-    for (const uint8_t &b : buffer.data())
-    {
-        qInfo() << "b: " << b;
-    }
+//    for (const uint8_t &b : buffer.data())
+    for (int i = 0; i < buffer.data().size(); i++)
+        qInfo() << i << ":" << uint8_t(buffer.data()[i]);
 
     socket->writeDatagram(buffer.data(), this->server, port);
 }
