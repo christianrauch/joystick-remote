@@ -18,17 +18,17 @@ ClientUDP::ClientUDP(QObject *parent)
 //    socket.bind(QHostAddress(server), 51324);
 //}
 
-void
+bool
 ClientUDP::start(const QString &server)
 {
     // socket etc.
     qInfo() << "connect: " << server.toStdString();
     this->server = QHostAddress(server);
     socket = new QUdpSocket;
-    socket->bind(this->server, port);
+    return socket->bind(this->server, port);
 }
 
-void
+bool
 ClientUDP::stop()
 {
     qInfo() << "disconnecting ...";
@@ -37,6 +37,7 @@ ClientUDP::stop()
     qInfo() << "disconnected";
     delete socket;
     socket = nullptr;
+    return true;
 }
 
 //void
@@ -54,14 +55,14 @@ ClientUDP::stop()
 
 // TODO: fix channel order
 
-void
+bool
 ClientUDP::send(float roll, float pitch, float yaw, float throttle,
                 float aux1, float aux2, float aux3,
                 float aux4, float aux5, float aux6)
 {
     if (!socket) {
 //        qInfo() << "not connected";
-        return;
+        return false;
     }
 
 //    qInfo() << "send " << throttle;
@@ -142,5 +143,5 @@ ClientUDP::send(float roll, float pitch, float yaw, float throttle,
     for (int i = 0; i < buffer.data().size(); i++)
         qInfo() << i << ":" << uint8_t(buffer.data()[i]);
 
-    socket->writeDatagram(buffer.data(), this->server, port);
+    return socket->writeDatagram(buffer.data(), this->server, port) > 0;
 }
