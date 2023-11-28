@@ -5,6 +5,7 @@
 
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/manual_control/manual_control.h>
+#include <mavsdk/plugins/action/action.h>
 
 
 class ClientMavLink : public Client
@@ -21,9 +22,9 @@ private:
 
     mavsdk::Mavsdk mavsdk;
 
-    mavsdk::ConnectionResult connection_result;
-
     std::shared_ptr<mavsdk::ManualControl> manual_control;
+
+    std::shared_ptr<mavsdk::Action> action;
 
 public slots:
     bool start(const QString &server) override;

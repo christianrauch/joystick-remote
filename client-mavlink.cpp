@@ -63,7 +63,9 @@ ClientMavLink::start(const QString &server)
     // const mavsdk::ConnectionResult connection_result =
     //     mavsdk.add_any_connection(("udp://" + server + ":14540").toStdString());
 
-    connection_result = mavsdk.add_udp_connection(server.toStdString());
+    const mavsdk::ConnectionResult connection_result = mavsdk.add_udp_connection(server.toStdString());
+
+    // const mavsdk::ConnectionResult connection_result = mavsdk.add_udp_connection();
 
     if (connection_result != mavsdk::ConnectionResult::Success)
         return false;
@@ -82,7 +84,19 @@ ClientMavLink::start(const QString &server)
 
     manual_control = std::make_shared<mavsdk::ManualControl>(sys);
 
+    action = std::make_shared<mavsdk::Action>(sys);
+
     qInfo() << "connected: " << server.toStdString();
+
+    if (action->arm() != Action::Result::Success) {
+        std::cerr << "arming failed: " << std::endl;
+        return false;
+    }
+
+    if (action->takeoff() != Action::Result::Success) {
+        std::cerr << "takeoff failed: " << std::endl;
+        return false;
+    }
 
     return true;
 
@@ -92,6 +106,8 @@ bool
 ClientMavLink::stop()
 {
     qInfo() << "disconnecting ...";
+    action->land();
+    action->disarm();
     //        while (socket->hasPendingDatagrams());
     // socket->close();
     qInfo() << "disconnected";
