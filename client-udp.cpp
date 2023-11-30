@@ -22,7 +22,7 @@ bool
 ClientUDP::start(const QString &server)
 {
     // socket etc.
-    qInfo() << "connect: " << server.toStdString();
+    qInfo() << "connect: " << server;
     this->server = QHostAddress(server);
     socket = new QUdpSocket;
     return socket->bind(this->server, port);

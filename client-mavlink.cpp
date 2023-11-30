@@ -86,7 +86,7 @@ ClientMavLink::start(const QString &server)
 
     action = std::make_shared<mavsdk::Action>(sys);
 
-    qInfo() << "connected: " << server.toStdString();
+    qInfo() << "connected: " << server;
 
     if (action->arm() != Action::Result::Success) {
         std::cerr << "arming failed: " << std::endl;
