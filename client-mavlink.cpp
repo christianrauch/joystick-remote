@@ -2,43 +2,46 @@
 #include <iostream>
 // #include <QBuffer>
 // #include <zlib.h>
+#include <mavconn/udp.hpp>
+// #include <mavconn/msgbuffer.hpp>
+#include <mavlink/v2.0/common/mavlink_msg_manual_control.hpp>
 
 #include <future>
 
 
 using std::chrono::seconds;
-using namespace mavsdk;
+// using namespace mavsdk;
 
-std::shared_ptr<System> get_system(Mavsdk& mavsdk)
-{
-    std::cout << "Waiting to discover system...\n";
-    auto prom = std::promise<std::shared_ptr<System>>{};
-    auto fut = prom.get_future();
+// std::shared_ptr<System> get_system(Mavsdk& mavsdk)
+// {
+//     std::cout << "Waiting to discover system...\n";
+//     auto prom = std::promise<std::shared_ptr<System>>{};
+//     auto fut = prom.get_future();
 
-    // We wait for new systems to be discovered, once we find one that has an
-    // autopilot, we decide to use it.
-    mavsdk.subscribe_on_new_system([&mavsdk, &prom]() {
-        auto system = mavsdk.systems().back();
+//     // We wait for new systems to be discovered, once we find one that has an
+//     // autopilot, we decide to use it.
+//     mavsdk.subscribe_on_new_system([&mavsdk, &prom]() {
+//         auto system = mavsdk.systems().back();
 
-        if (system->has_autopilot()) {
-            std::cout << "Discovered autopilot\n";
+//         if (system->has_autopilot()) {
+//             std::cout << "Discovered autopilot\n";
 
-            // Unsubscribe again as we only want to find one system.
-            mavsdk.subscribe_on_new_system(nullptr);
-            prom.set_value(system);
-        }
-    });
+//             // Unsubscribe again as we only want to find one system.
+//             mavsdk.subscribe_on_new_system(nullptr);
+//             prom.set_value(system);
+//         }
+//     });
 
-    // We usually receive heartbeats at 1Hz, therefore we should find a
-    // system after around 3 seconds max, surely.
-    if (fut.wait_for(seconds(3)) == std::future_status::timeout) {
-        std::cerr << "No autopilot found.\n";
-        return {};
-    }
+//     // We usually receive heartbeats at 1Hz, therefore we should find a
+//     // system after around 3 seconds max, surely.
+//     if (fut.wait_for(seconds(3)) == std::future_status::timeout) {
+//         std::cerr << "No autopilot found.\n";
+//         return {};
+//     }
 
-    // Get discovered system now.
-    return fut.get();
-}
+//     // Get discovered system now.
+//     return fut.get();
+// }
 
 
 ClientMavLink::ClientMavLink(QObject *parent)
@@ -63,40 +66,64 @@ ClientMavLink::start(const QString &server)
     // const mavsdk::ConnectionResult connection_result =
     //     mavsdk.add_any_connection(("udp://" + server + ":14540").toStdString());
 
-    const mavsdk::ConnectionResult connection_result = mavsdk.add_udp_connection(server.toStdString());
+    // const mavsdk::ConnectionResult connection_result = mavsdk.add_udp_connection(server.toStdString());
 
     // const mavsdk::ConnectionResult connection_result = mavsdk.add_udp_connection();
 
-    if (connection_result != mavsdk::ConnectionResult::Success)
-        return false;
+    // uint8_t system_id = 1;
+    // uint8_t component_id = mavconn::MAV_COMP_ID_UDP_BRIDGE;
+    // std::string bind_host = mavconn::MAVConnUDP::DEFAULT_BIND_HOST;
+    // uint16_t bind_port = mavconn::MAVConnUDP::DEFAULT_BIND_PORT;
+    // std::string remote_host = mavconn::MAVConnUDP::DEFAULT_REMOTE_HOST;
+    // uint16_t remote_port = mavconn::MAVConnUDP::DEFAULT_REMOTE_PORT;
 
-    std::cout << ", " << connection_result << std::endl;
+
+    // auto aa = std::make_shared<mavconn::MAVConnUDP>(
+    //     1, mavconn::MAV_COMP_ID_UDP_BRIDGE,
+    //     mavconn::MAVConnUDP::DEFAULT_BIND_HOST, mavconn::MAVConnUDP::DEFAULT_BIND_PORT,
+    //     server.toStdString(), mavconn::MAVConnUDP::DEFAULT_REMOTE_PORT
+    //     );
+    // connection = std::static_pointer_cast<mavconn::MAVConnInterface>(aa);
+
+    connection = std::make_shared<mavconn::MAVConnUDP>(
+        1, mavconn::MAV_COMP_ID_UDP_BRIDGE,
+        mavconn::MAVConnUDP::DEFAULT_BIND_HOST, mavconn::MAVConnUDP::DEFAULT_BIND_PORT,
+        server.toStdString(), mavconn::MAVConnUDP::DEFAULT_REMOTE_PORT
+        );
+
+    // conection = std::make_unique<mavconn::MAVConnUDP>(
+    //     );
+
+    // if (connection_result != mavsdk::ConnectionResult::Success)
+    //     return false;
+
+    // std::cout << ", " << connection_result << std::endl;
 
     // const std::vector<std::shared_ptr<mavsdk::System>> sys = mavsdk.systems();
 
     // if (sys.empty())
     //     return false;
 
-    std::shared_ptr<mavsdk::System> sys = get_system(mavsdk);
+    // std::shared_ptr<mavsdk::System> sys = get_system(mavsdk);
 
-    if (!sys)
-        return false;
+    // if (!sys)
+    //     return false;
 
-    manual_control = std::make_shared<mavsdk::ManualControl>(sys);
+    // manual_control = std::make_shared<mavsdk::ManualControl>(sys);
 
-    action = std::make_shared<mavsdk::Action>(sys);
+    // action = std::make_shared<mavsdk::Action>(sys);
 
     qInfo() << "connected: " << server;
 
-    if (action->arm() != Action::Result::Success) {
-        std::cerr << "arming failed: " << std::endl;
-        return false;
-    }
+    // if (action->arm() != Action::Result::Success) {
+    //     std::cerr << "arming failed: " << std::endl;
+    //     return false;
+    // }
 
-    if (action->takeoff() != Action::Result::Success) {
-        std::cerr << "takeoff failed: " << std::endl;
-        return false;
-    }
+    // if (action->takeoff() != Action::Result::Success) {
+    //     std::cerr << "takeoff failed: " << std::endl;
+    //     return false;
+    // }
 
     return true;
 
@@ -106,8 +133,8 @@ bool
 ClientMavLink::stop()
 {
     qInfo() << "disconnecting ...";
-    action->land();
-    action->disarm();
+    // action->land();
+    // action->disarm();
     //        while (socket->hasPendingDatagrams());
     // socket->close();
     qInfo() << "disconnected";
@@ -145,7 +172,10 @@ ClientMavLink::send(float roll, float pitch, float yaw, float throttle,
     // if (connection_result != mavsdk::ConnectionResult::Success)
     //     return false;
 
-    if (!manual_control)
+    // if (!manual_control)
+    //     return false;
+
+    if (!connection)
         return false;
 
 //    qInfo() << "send " << throttle;
@@ -163,8 +193,16 @@ ClientMavLink::send(float roll, float pitch, float yaw, float throttle,
 
     qInfo() << "TAER: " << throttle << ", " << roll << ", " << pitch << ", " << yaw << ", " << aux1 << ", " << aux2;
 
-    if (manual_control)
-        manual_control->set_manual_control_input(pitch, roll, throttle, yaw);
+    // if (manual_control)
+    //     manual_control->set_manual_control_input(pitch, roll, throttle, yaw);
+
+    // set_manual_control_input(float x, float y, float z, float r)
+    mavlink::common::msg::MANUAL_CONTROL msg;
+    msg.x = static_cast<int16_t>(pitch * 1000);
+    msg.y = static_cast<int16_t>(roll * 1000);
+    msg.z = static_cast<int16_t>(throttle * 1000);
+    msg.r = static_cast<int16_t>(yaw * 1000);
+    connection->send_message(msg);
 
     return true;
 

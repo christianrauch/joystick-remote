@@ -3,9 +3,14 @@
 // #include <QUdpSocket>
 #include <qqml.h>
 
-#include <mavsdk/mavsdk.h>
-#include <mavsdk/plugins/manual_control/manual_control.h>
-#include <mavsdk/plugins/action/action.h>
+// #include <mavsdk/mavsdk.h>
+// #include <mavsdk/plugins/manual_control/manual_control.h>
+// #include <mavsdk/plugins/action/action.h>
+
+// #include <mavlink/common/mavlink.h>
+// #include <mavconn/udp.hpp>
+#include <mavconn/interface.hpp>
+#include <memory>
 
 
 class ClientMavLink : public Client
@@ -20,11 +25,15 @@ private:
     // QHostAddress server;
     // const quint16 port = 51324;
 
-    mavsdk::Mavsdk mavsdk;
+    std::shared_ptr<mavconn::MAVConnInterface> connection;
 
-    std::shared_ptr<mavsdk::ManualControl> manual_control;
+    // mavconn::MAVConnInterface conection;
 
-    std::shared_ptr<mavsdk::Action> action;
+    // mavsdk::Mavsdk mavsdk;
+
+    // std::shared_ptr<mavsdk::ManualControl> manual_control;
+
+    // std::shared_ptr<mavsdk::Action> action;
 
 public slots:
     bool start(const QString &server) override;
