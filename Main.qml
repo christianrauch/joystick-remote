@@ -13,7 +13,7 @@ Window {
     visible: true
     title: qsTr("Remote Control")
 
-    ClientUDP {
+    ClientROS {
         id: client
     }
 
