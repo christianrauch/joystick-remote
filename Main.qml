@@ -95,6 +95,7 @@ Window {
             Joypad {
                 id: joypad1
                 verticalAnimation: false
+                yAxis: 1 // start thumb stick at bottom
                 Layout.fillWidth: true
                 Layout.fillHeight: true
             }
