@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
 find_package(ZLIB REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(mavros_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -36,7 +36,7 @@ set_target_properties(appjoystick-remote PROPERTIES
 target_link_libraries(appjoystick-remote
     PRIVATE Qt6::Quick ZLIB::ZLIB
         rclcpp::rclcpp
-        ${mavros_msgs_TARGETS}
+        ${geometry_msgs_TARGETS}
 )
 
 include(GNUInstallDirs)
