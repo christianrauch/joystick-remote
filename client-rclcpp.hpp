@@ -1,5 +1,6 @@
 #pragma once
 #include "client.hpp"
+#include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/wrench.hpp>
 #include <qqml.h>
 #include <rclcpp/node.hpp>
@@ -12,8 +13,8 @@ public:
 
 private:
   rclcpp::Node::SharedPtr node = nullptr;
-  rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr manual_control_pub =
-      nullptr;
+  rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr pub_wrench = nullptr;
+  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr pub_twist = nullptr;
   std::vector<std::string> argv_vec;
 
 public slots:

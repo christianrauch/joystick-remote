@@ -19,16 +19,22 @@ ClientROS::ClientROS(QObject *parent) : Client{parent} {
 
 bool ClientROS::start(const QString &server) {
   node = rclcpp::Node::make_shared("joystick_remote_client");
-  manual_control_pub =
-      node->create_publisher<geometry_msgs::msg::Wrench>("wrench", 1);
+  const bool wrench = node->declare_parameter("use_wrench", true);
+  if (wrench)
+    pub_wrench =
+        node->create_publisher<geometry_msgs::msg::Wrench>("wrench", 1);
+  else
+    pub_twist = node->create_publisher<geometry_msgs::msg::Twist>("twist", 1);
   qInfo() << "manual_control publisher created";
   return true;
 }
 
 bool ClientROS::stop() {
   qInfo() << "disconnecting ...";
-  manual_control_pub.reset();
-  manual_control_pub = nullptr;
+  pub_wrench.reset();
+  pub_wrench = nullptr;
+  pub_twist.reset();
+  pub_twist = nullptr;
   node.reset();
   node = nullptr;
   return true;
@@ -45,7 +51,7 @@ bool ClientROS::send(float roll, float pitch, float yaw, float throttle,
   // qInfo() << "TAER: " << throttle << ", " << roll << ", " << pitch << ", " <<
   // yaw << ", " << aux1 << ", " << aux2;
 
-  if (manual_control_pub) {
+  if (pub_wrench) {
     geometry_msgs::msg::Wrench msg;
 
     msg.force.z = (throttle + 1) / 2; // map from [-1,1] to [0,1];
@@ -53,7 +59,16 @@ bool ClientROS::send(float roll, float pitch, float yaw, float throttle,
     msg.torque.y = roll;
     msg.torque.z = yaw;
 
-    manual_control_pub->publish(msg);
+    pub_wrench->publish(msg);
+  } else if (pub_twist) {
+    geometry_msgs::msg::Twist msg;
+
+    msg.linear.z = (throttle + 1) / 2; // map from [-1,1] to [0,1];
+    msg.angular.x = pitch;
+    msg.angular.y = roll;
+    msg.angular.z = yaw;
+
+    pub_twist->publish(msg);
   }
 
   return true;
