@@ -2,6 +2,7 @@
 #include "client.hpp"
 #include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/wrench.hpp>
+#include <geometry_msgs/msg/quaternion.hpp>
 #include <qqml.h>
 #include <rclcpp/node.hpp>
 
@@ -15,6 +16,7 @@ private:
   rclcpp::Node::SharedPtr node = nullptr;
   rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr pub_wrench = nullptr;
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr pub_twist = nullptr;
+  rclcpp::Publisher<geometry_msgs::msg::Quaternion>::SharedPtr pub_quat = nullptr;
   std::vector<std::string> argv_vec;
 
 public slots:
