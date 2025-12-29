@@ -26,6 +26,7 @@ bool ClientROS::start(const QString &server) {
   else
     pub_twist = node->create_publisher<geometry_msgs::msg::Twist>("twist", 1);
   pub_quat = node->create_publisher<geometry_msgs::msg::Quaternion>("orientation", 1);
+  pub_att = node->create_publisher<geometry_msgs::msg::Vector3>("attitude", 1);
   qInfo() << "manual_control publisher created";
   return true;
 }
@@ -52,6 +53,14 @@ bool ClientROS::send(float roll, float pitch, float yaw, float throttle,
   // qInfo() << "TAER: " << throttle << ", " << roll << ", " << pitch << ", " <<
   // yaw << ", " << aux1 << ", " << aux2;
 
+  geometry_msgs::msg::Vector3 msg_att;
+
+  msg_att.x = roll * 4;
+  msg_att.y = pitch * 4;
+  msg_att.z = yaw * -1;
+
+  pub_att->publish(msg_att);
+
   if (pub_wrench) {
     geometry_msgs::msg::Wrench msg;
 
@@ -74,9 +83,9 @@ bool ClientROS::send(float roll, float pitch, float yaw, float throttle,
 
   geometry_msgs::msg::Quaternion msg_quat;
 
-  roll *= 4;
-  pitch *= 4;
-  yaw *= 4;
+  // roll *= 4;
+  // pitch *= 4;
+  // yaw *= 4;
 
   // Convert roll, pitch, yaw (in radians) to quaternion
   double cy = cos(yaw * 0.5);

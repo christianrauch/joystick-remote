@@ -17,6 +17,7 @@ private:
   rclcpp::Publisher<geometry_msgs::msg::Wrench>::SharedPtr pub_wrench = nullptr;
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr pub_twist = nullptr;
   rclcpp::Publisher<geometry_msgs::msg::Quaternion>::SharedPtr pub_quat = nullptr;
+  rclcpp::Publisher<geometry_msgs::msg::Vector3>::SharedPtr pub_att = nullptr;
   std::vector<std::string> argv_vec;
 
 public slots:
